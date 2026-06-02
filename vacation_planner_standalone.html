@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Vacation Planner 2026 - IBM Carbon Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ui-background: #161616;
+            --ui-01: #262626;
+            --ui-02: #393939;
+            --ui-03: #525252;
+            --ui-04: #8d8d8d;
+            --ui-05: #f4f4f4;
+            --text-01: #f4f4f4;
+            --text-02: #c6c6c6;
+            --text-03: #8d8d8d;
+            --text-04: #525252;
+            --link-01: #78a9ff;
+            --interactive-01: #0f62fe;
+            --interactive-02: #393939;
+            --danger: #da1e28;
+            --success: #24a148;
+            --warning: #f1c21b;
+            --info: #0043ce;
+            --border-subtle: #393939;
+            --border-strong: #525252;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background-color: var(--ui-background);
+            color: var(--text-01);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--ui-01);
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-02);
+            font-size: 14px;
+        }
+
+        .tabs {
+            background: var(--ui-01);
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 24px;
+            display: flex;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 16px 24px;
+            cursor: pointer;
+            border-right: 1px solid var(--border-subtle);
+            transition: background 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .tab:hover {
+            background: var(--ui-02);
+        }
+
+        .tab.active {
+            background: var(--interactive-01);
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats-card {
+            background: var(--ui-01);
+            padding: 24px;
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 32px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-03);
+            text-transform: uppercase;
+            letter-spacing: 0.32px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 300;
+            margin-bottom: 4px;
+        }
+
+        .stat-value.remaining {
+            color: var(--success);
+        }
+
+        .calendar-section {
+            background: var(--ui-01);
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 32px;
+        }
+
+        .calendar-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .calendar-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .months-container {
+            padding: 24px;
+        }
+
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .month-card {
+            background: var(--ui-02);
+            border: 1px solid var(--border-subtle);
+            padding: 16px;
+        }
+
+        .month-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--text-02);
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            background: var(--ui-03);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .day-cell:hover:not(.day-header):not(.day-past):not(.day-weekend) {
+            transform: scale(1.1);
+            background: var(--interactive-01);
+        }
+
+        .day-header {
+            font-weight: 600;
+            color: var(--text-03);
+            background: transparent;
+            cursor: default;
+        }
+
+        .day-selected {
+            background: var(--interactive-01) !important;
+            font-weight: 600;
+        }
+
+        .day-past {
+            background: var(--ui-02);
+            color: var(--text-04);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .day-weekend {
+            background: var(--ui-02);
+            color: var(--text-04);
+        }
+
+        .legend {
+            display: flex;
+            gap: 24px;
+            padding: 16px 24px;
+            background: var(--ui-02);
+            border-top: 1px solid var(--border-subtle);
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .save-button {
+            background: var(--interactive-01);
+            color: var(--text-01);
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'IBM Plex Sans', sans-serif;
+            margin: 24px;
+            transition: background 0.2s;
+        }
+
+        .save-button:hover {
+            background: #0353e9;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success);
+            color: var(--text-01);
+            padding: 16px 24px;
+            border-radius: 4px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .month-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Team Vacation Planner 2026</h1>
+            <p>Interactive vacation tracking - Data saved in browser localStorage</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchEmployee('Mohamed Elhussein')">Mohamed Elhussein</div>
+            <div class="tab" onclick="switchEmployee('Menna Abdelhamid')">Menna Abdelhamid</div>
+            <div class="tab" onclick="switchEmployee('Teodora Negrea')">Teodora Negrea</div>
+            <div class="tab" onclick="switchEmployee('Charbel Antonios')">Charbel Antonios</div>
+        </div>
+
+        <div id="Mohamed Elhussein" class="tab-content active">
+            <div class="stats-card">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">PC Days Total</div>
+                        <div class="stat-value">5</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Vacation Days Total</div>
+                        <div class="stat-value">25</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Days Selected</div>
+                        <div class="stat-value" data-stat="selected">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Remaining Days</div>
+                        <div class="stat-value remaining" data-stat="remaining">30</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <div class="calendar-title">2026 Full Year Calendar - Click dates to select vacation days</div>
+                </div>
+                <div class="months-container" data-calendar="Mohamed Elhussein"></div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--interactive-01);"></div>
+                        <span>Selected Vacation Day</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--ui-02);"></div>
+                        <span>Weekend</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--ui-02); opacity: 0.5;"></div>
+                        <span>Past Date (Disabled)</span>
+                    </div>
+                </div>
+                <button class="save-button" onclick="saveVacationDays('Mohamed Elhussein')">Save Vacation Selection</button>
+            </div>
+        </div>
+
+        <div id="Menna Abdelhamid" class="tab-content">
+            <div class="stats-card">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">PC Days Total</div>
+                        <div class="stat-value">5</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Vacation Days Total</div>
+                        <div class="stat-value">25</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Days Selected</div>
+                        <div class="stat-value" data-stat="selected">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Remaining Days</div>
+                        <div class="stat-value remaining" data-stat="remaining">30</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <div class="calendar-title">2026 Full Year Calendar - Click dates to select vacation days</div>
+                </div>
+                <div class="months-container" data-calendar="Menna Abdelhamid"></div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--interactive-01);"></div>
+                        <span>Selected Vacation Day</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--ui-02);"></div>
+                        <span>Weekend</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--ui-02); opacity: 0.5;"></div>
+                        <span>Past Date (Disabled)</span>
+                    </div>
+                </div>
+                <button class="save-button" onclick="saveVacationDays('Menna Abdelhamid')">Save Vacation Selection</button>
+            </div>
+        </div>
+
+        <div id="Teodora Negrea" class="tab-content">
+            <div class="stats-card">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">PC Days Total</div>
+                        <div class="stat-value">5</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Vacation Days Total</div>
+                        <div class="stat-value">25</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Days Selected</div>
+                        <div class="stat-value" data-stat="selected">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Remaining Days</div>
+                        <div class="stat-value remaining" data-stat="remaining">30</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <div class="calendar-title">2026 Full Year Calendar - Click dates to select vacation days</div>
+                </div>
+                <div class="months-container" data-calendar="Teodora Negrea"></div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--interactive-01);"></div>
+                        <span>Selected Vacation Day</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--ui-02);"></div>
+                        <span>Weekend</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--ui-02); opacity: 0.5;"></div>
+                        <span>Past Date (Disabled)</span>
+                    </div>
+                </div>
+                <button class="save-button" onclick="saveVacationDays('Teodora Negrea')">Save Vacation Selection</button>
+            </div>
+        </div>
+
+        <div id="Charbel Antonios" class="tab-content">
+            <div class="stats-card">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">PC Days Total</div>
+                        <div class="stat-value">5</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Vacation Days Total</div>
+                        <div class="stat-value">25</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Days Selected</div>
+                        <div class="stat-value" data-stat="selected">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Remaining Days</div>
+                        <div class="stat-value remaining" data-stat="remaining">30</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <div class="calendar-title">2026 Full Year Calendar - Click dates to select vacation days</div>
+                </div>
+                <div class="months-container" data-calendar="Charbel Antonios"></div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--interactive-01);"></div>
+                        <span>Selected Vacation Day</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--ui-02);"></div>
+                        <span>Weekend</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--ui-02); opacity: 0.5;"></div>
+                        <span>Past Date (Disabled)</span>
+                    </div>
+                </div>
+                <button class="save-button" onclick="saveVacationDays('Charbel Antonios')">Save Vacation Selection</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        Vacation days saved to browser!
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'vacation_planner_2026';
+        let selectedDates = {
+            'Mohamed Elhussein': new Set(),
+            'Menna Abdelhamid': new Set(),
+            'Teodora Negrea': new Set(),
+            'Charbel Antonios': new Set()
+        };
+        const today = new Date('2026-06-01');
+
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+        const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+        // Load data from localStorage
+        function loadFromStorage() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                const data = JSON.parse(stored);
+                Object.keys(data).forEach(employee => {
+                    selectedDates[employee] = new Set(data[employee]);
+                });
+            }
+        }
+
+        // Save data to localStorage
+        function saveToStorage() {
+            const data = {};
+            Object.keys(selectedDates).forEach(employee => {
+                data[employee] = Array.from(selectedDates[employee]);
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function switchEmployee(employeeName) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(employeeName).classList.add('active');
+        }
+
+        function generateCalendar(employeeName) {
+            const container = document.querySelector(`[data-calendar="${employeeName}"]`);
+            container.innerHTML = '';
+
+            for (let quarter = 0; quarter < 4; quarter++) {
+                const monthGrid = document.createElement('div');
+                monthGrid.className = 'month-grid';
+
+                for (let i = 0; i < 3; i++) {
+                    const monthIndex = quarter * 3 + i;
+                    const monthCard = createMonthCard(2026, monthIndex, employeeName);
+                    monthGrid.appendChild(monthCard);
+                }
+
+                container.appendChild(monthGrid);
+            }
+        }
+
+        function createMonthCard(year, monthIndex, employeeName) {
+            const monthCard = document.createElement('div');
+            monthCard.className = 'month-card';
+
+            const monthTitle = document.createElement('div');
+            monthTitle.className = 'month-name';
+            monthTitle.textContent = monthNames[monthIndex] + ' 2026';
+            monthCard.appendChild(monthTitle);
+
+            const daysGrid = document.createElement('div');
+            daysGrid.className = 'days-grid';
+
+            dayNames.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-cell day-header';
+                dayHeader.textContent = day;
+                daysGrid.appendChild(dayHeader);
+            });
+
+            const firstDay = new Date(year, monthIndex, 1).getDay();
+            const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'day-cell';
+                daysGrid.appendChild(emptyCell);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'day-cell';
+                dayCell.textContent = day;
+
+                const currentDate = new Date(year, monthIndex, day);
+                const dateString = currentDate.toISOString().split('T')[0];
+                const dayOfWeek = currentDate.getDay();
+
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    dayCell.classList.add('day-weekend');
+                }
+
+                if (currentDate < today) {
+                    dayCell.classList.add('day-past');
+                } else if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                    dayCell.onclick = () => toggleDate(dateString, dayCell, employeeName);
+                }
+
+                if (selectedDates[employeeName].has(dateString)) {
+                    dayCell.classList.add('day-selected');
+                }
+
+                dayCell.dataset.date = dateString;
+                daysGrid.appendChild(dayCell);
+            }
+
+            monthCard.appendChild(daysGrid);
+            return monthCard;
+        }
+
+        function toggleDate(dateString, cell, employeeName) {
+            if (selectedDates[employeeName].has(dateString)) {
+                selectedDates[employeeName].delete(dateString);
+                cell.classList.remove('day-selected');
+            } else {
+                selectedDates[employeeName].add(dateString);
+                cell.classList.add('day-selected');
+            }
+            updateStats(employeeName);
+            saveToStorage();
+        }
+
+        function updateStats(employeeName) {
+            const pcTotal = 5;
+            const vacationTotal = 25;
+            const totalAvailable = pcTotal + vacationTotal;
+            const selected = selectedDates[employeeName].size;
+            const remaining = totalAvailable - selected;
+
+            const tabContent = document.getElementById(employeeName);
+            tabContent.querySelector('[data-stat="selected"]').textContent = selected;
+            const remainingEl = tabContent.querySelector('[data-stat="remaining"]');
+            remainingEl.textContent = remaining;
+            remainingEl.style.color = remaining < 0 ? 'var(--danger)' : 'var(--success)';
+        }
+
+        function loadEmployeeData(employeeName) {
+            generateCalendar(employeeName);
+            updateStats(employeeName);
+        }
+
+        function saveVacationDays(employeeName) {
+            saveToStorage();
+            showNotification();
+        }
+
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize
+        loadFromStorage();
+        ['Mohamed Elhussein', 'Menna Abdelhamid', 'Teodora Negrea', 'Charbel Antonios'].forEach(name => {
+            loadEmployeeData(name);
+        });
+    </script>
+</body>
+</html>
