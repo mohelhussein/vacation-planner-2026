@@ -31,7 +31,6 @@
             --warning: #f1c21b;
             --info: #0043ce;
             --holiday: #ff832b;
-            --sick: #fa4d56;
             --border-subtle: #393939;
             --border-strong: #525252;
         }
@@ -111,11 +110,6 @@
             color: #000;
         }
 
-        .mode-button.sick.active {
-            border-color: var(--sick);
-            background: var(--sick);
-        }
-
         .employee-section {
             background: var(--ui-01);
             border: 1px solid var(--border-subtle);
@@ -135,6 +129,12 @@
         .employee-name {
             font-size: 24px;
             font-weight: 500;
+        }
+
+        .employee-country {
+            font-size: 14px;
+            color: var(--text-03);
+            margin-top: 4px;
         }
 
         .stats-inline {
@@ -225,11 +225,6 @@
         .day-holiday {
             background: var(--holiday) !important;
             color: #000 !important;
-            font-weight: 600;
-        }
-
-        .day-sick {
-            background: var(--sick) !important;
             font-weight: 600;
         }
 
@@ -331,19 +326,21 @@
     <div class="container">
         <div class="header">
             <h1>Team Vacation Planner 2026</h1>
-            <p>Interactive vacation tracking - Data saved in browser localStorage</p>
+            <p>Interactive vacation tracking - Select mode and click dates to mark vacation or holidays</p>
         </div>
 
         <div class="selection-mode">
             <label>Selection Mode:</label>
             <button class="mode-button active" onclick="setSelectionMode('vacation')">Vacation Days</button>
             <button class="mode-button holiday" onclick="setSelectionMode('holiday')">Official Holidays</button>
-            <button class="mode-button sick" onclick="setSelectionMode('sick')">Sick Leave</button>
         </div>
 
         <div id="Mohamed Elhussein" class="employee-section">
             <div class="employee-header">
-                <div class="employee-name">Mohamed Elhussein</div>
+                <div>
+                    <div class="employee-name">Mohamed Elhussein</div>
+                    <div class="employee-country">🇪🇬 Egypt</div>
+                </div>
                 <div class="stats-inline">
                     <div class="stat-inline">
                         <div class="stat-label">PC Days</div>
@@ -372,10 +369,6 @@
                     <span>Official Holiday</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background: var(--sick);"></div>
-                    <span>Sick Leave</span>
-                </div>
-                <div class="legend-item">
                     <div class="legend-color" style="background: var(--ui-02);"></div>
                     <span>Weekend</span>
                 </div>
@@ -385,7 +378,10 @@
 
         <div id="Menna Abdelhamid" class="employee-section">
             <div class="employee-header">
-                <div class="employee-name">Menna Abdelhamid</div>
+                <div>
+                    <div class="employee-name">Menna Abdelhamid</div>
+                    <div class="employee-country">🇪🇬 Egypt</div>
+                </div>
                 <div class="stats-inline">
                     <div class="stat-inline">
                         <div class="stat-label">PC Days</div>
@@ -414,10 +410,6 @@
                     <span>Official Holiday</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background: var(--sick);"></div>
-                    <span>Sick Leave</span>
-                </div>
-                <div class="legend-item">
                     <div class="legend-color" style="background: var(--ui-02);"></div>
                     <span>Weekend</span>
                 </div>
@@ -427,7 +419,10 @@
 
         <div id="Teodora Negrea" class="employee-section">
             <div class="employee-header">
-                <div class="employee-name">Teodora Negrea</div>
+                <div>
+                    <div class="employee-name">Teodora Negrea</div>
+                    <div class="employee-country">🇸🇰 Slovakia</div>
+                </div>
                 <div class="stats-inline">
                     <div class="stat-inline">
                         <div class="stat-label">PC Days</div>
@@ -456,10 +451,6 @@
                     <span>Official Holiday</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background: var(--sick);"></div>
-                    <span>Sick Leave</span>
-                </div>
-                <div class="legend-item">
                     <div class="legend-color" style="background: var(--ui-02);"></div>
                     <span>Weekend</span>
                 </div>
@@ -469,7 +460,10 @@
 
         <div id="Charbel Antonios" class="employee-section">
             <div class="employee-header">
-                <div class="employee-name">Charbel Antonios</div>
+                <div>
+                    <div class="employee-name">Charbel Antonios</div>
+                    <div class="employee-country">🇦🇪 UAE</div>
+                </div>
                 <div class="stats-inline">
                     <div class="stat-inline">
                         <div class="stat-label">PC Days</div>
@@ -498,10 +492,6 @@
                     <span>Official Holiday</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background: var(--sick);"></div>
-                    <span>Sick Leave</span>
-                </div>
-                <div class="legend-item">
                     <div class="legend-color" style="background: var(--ui-02);"></div>
                     <span>Weekend</span>
                 </div>
@@ -516,15 +506,15 @@
 
     <script>
         const STORAGE_KEY = 'vacation_planner_2026';
-        let currentMode = 'vacation'; // 'vacation', 'holiday', or 'sick'
+        let currentMode = 'vacation'; // 'vacation' or 'holiday'
         let selectedDates = {
-            'Mohamed Elhussein': { vacation: new Set(), holiday: new Set(), sick: new Set() },
-            'Menna Abdelhamid': { vacation: new Set(), holiday: new Set(), sick: new Set() },
-            'Teodora Negrea': { vacation: new Set(), holiday: new Set(), sick: new Set() },
-            'Charbel Antonios': { vacation: new Set(), holiday: new Set(), sick: new Set() }
+            'Mohamed Elhussein': { vacation: new Set(), holiday: new Set() },
+            'Menna Abdelhamid': { vacation: new Set(), holiday: new Set() },
+            'Teodora Negrea': { vacation: new Set(), holiday: new Set() },
+            'Charbel Antonios': { vacation: new Set(), holiday: new Set() }
         };
-        const today = new Date('2026-06-01');
 
+        const today = new Date('2026-06-01');
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
                            'July', 'August', 'September', 'October', 'November', 'December'];
         const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -549,9 +539,6 @@
                     if (data[employee].holiday) {
                         selectedDates[employee].holiday = new Set(data[employee].holiday);
                     }
-                    if (data[employee].sick) {
-                        selectedDates[employee].sick = new Set(data[employee].sick);
-                    }
                 });
             }
         }
@@ -562,8 +549,7 @@
             Object.keys(selectedDates).forEach(employee => {
                 data[employee] = {
                     vacation: Array.from(selectedDates[employee].vacation),
-                    holiday: Array.from(selectedDates[employee].holiday),
-                    sick: Array.from(selectedDates[employee].sick)
+                    holiday: Array.from(selectedDates[employee].holiday)
                 };
             });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -626,11 +612,9 @@
 
                 if (dayOfWeek === 0 || dayOfWeek === 6) {
                     dayCell.classList.add('day-weekend');
-                }
-
-                if (currentDate < today) {
+                } else if (currentDate < today) {
                     dayCell.classList.add('day-past');
-                } else if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                } else {
                     dayCell.onclick = () => toggleDate(dateString, dayCell, employeeName);
                 }
 
@@ -640,9 +624,6 @@
                 }
                 if (selectedDates[employeeName].holiday.has(dateString)) {
                     dayCell.classList.add('day-holiday');
-                }
-                if (selectedDates[employeeName].sick.has(dateString)) {
-                    dayCell.classList.add('day-sick');
                 }
 
                 dayCell.dataset.date = dateString;
@@ -655,17 +636,16 @@
 
         function toggleDate(dateString, cell, employeeName) {
             // Remove all type classes first
-            cell.classList.remove('day-vacation', 'day-holiday', 'day-sick');
+            cell.classList.remove('day-vacation', 'day-holiday');
             
             // Check if this date is already selected in current mode
             if (selectedDates[employeeName][currentMode].has(dateString)) {
                 // Deselect it
                 selectedDates[employeeName][currentMode].delete(dateString);
             } else {
-                // Remove from other modes if selected there
+                // Remove from other mode if selected there
                 selectedDates[employeeName].vacation.delete(dateString);
                 selectedDates[employeeName].holiday.delete(dateString);
-                selectedDates[employeeName].sick.delete(dateString);
                 
                 // Add to current mode
                 selectedDates[employeeName][currentMode].add(dateString);
@@ -675,8 +655,6 @@
                     cell.classList.add('day-vacation');
                 } else if (currentMode === 'holiday') {
                     cell.classList.add('day-holiday');
-                } else if (currentMode === 'sick') {
-                    cell.classList.add('day-sick');
                 }
             }
             
@@ -686,8 +664,7 @@
 
         function updateStats(employeeName) {
             const totalSelected = selectedDates[employeeName].vacation.size + 
-                                 selectedDates[employeeName].holiday.size + 
-                                 selectedDates[employeeName].sick.size;
+                                 selectedDates[employeeName].holiday.size;
 
             const tabContent = document.getElementById(employeeName);
             tabContent.querySelector('[data-stat="selected"]').textContent = totalSelected;
