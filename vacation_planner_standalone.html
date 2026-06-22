@@ -30,6 +30,8 @@
             --success: #24a148;
             --warning: #f1c21b;
             --info: #0043ce;
+            --holiday: #ff832b;
+            --sick: #fa4d56;
             --border-subtle: #393939;
             --border-strong: #525252;
         }
@@ -65,93 +67,103 @@
             font-size: 14px;
         }
 
-        .tabs {
+        .selection-mode {
             background: var(--ui-01);
+            padding: 16px 24px;
             border: 1px solid var(--border-subtle);
             margin-bottom: 24px;
             display: flex;
-            overflow-x: auto;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
-        .tab {
-            padding: 16px 24px;
-            cursor: pointer;
-            border-right: 1px solid var(--border-subtle);
-            transition: background 0.2s;
-            white-space: nowrap;
-            flex-shrink: 0;
+        .selection-mode label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-right: 8px;
         }
 
-        .tab:hover {
+        .mode-button {
+            padding: 10px 20px;
+            border: 2px solid var(--border-subtle);
             background: var(--ui-02);
+            color: var(--text-01);
+            cursor: pointer;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s;
         }
 
-        .tab.active {
+        .mode-button:hover {
+            background: var(--ui-03);
+        }
+
+        .mode-button.active {
+            border-color: var(--interactive-01);
             background: var(--interactive-01);
             font-weight: 500;
         }
 
-        .tab-content {
-            display: none;
+        .mode-button.holiday.active {
+            border-color: var(--holiday);
+            background: var(--holiday);
+            color: #000;
         }
 
-        .tab-content.active {
-            display: block;
+        .mode-button.sick.active {
+            border-color: var(--sick);
+            background: var(--sick);
         }
 
-        .stats-card {
+        .employee-section {
             background: var(--ui-01);
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 32px;
             padding: 24px;
-            border: 1px solid var(--border-subtle);
-            margin-bottom: 32px;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 24px;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-03);
-            text-transform: uppercase;
-            letter-spacing: 0.32px;
-            margin-bottom: 8px;
-        }
-
-        .stat-value {
-            font-size: 36px;
-            font-weight: 300;
-            margin-bottom: 4px;
-        }
-
-        .stat-value.remaining {
-            color: var(--success);
-        }
-
-        .calendar-section {
-            background: var(--ui-01);
-            border: 1px solid var(--border-subtle);
-            margin-bottom: 32px;
-        }
-
-        .calendar-header {
-            padding: 20px 24px;
+        .employee-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
             border-bottom: 1px solid var(--border-subtle);
         }
 
-        .calendar-title {
-            font-size: 18px;
+        .employee-name {
+            font-size: 24px;
             font-weight: 500;
         }
 
+        .stats-inline {
+            display: flex;
+            gap: 32px;
+            font-size: 14px;
+        }
+
+        .stat-inline {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-03);
+            text-transform: uppercase;
+            letter-spacing: 0.32px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 300;
+        }
+
         .months-container {
-            padding: 24px;
+            margin-bottom: 16px;
         }
 
         .month-grid {
@@ -195,7 +207,7 @@
 
         .day-cell:hover:not(.day-header):not(.day-past):not(.day-weekend) {
             transform: scale(1.1);
-            background: var(--interactive-01);
+            opacity: 0.8;
         }
 
         .day-header {
@@ -205,8 +217,19 @@
             cursor: default;
         }
 
-        .day-selected {
+        .day-vacation {
             background: var(--interactive-01) !important;
+            font-weight: 600;
+        }
+
+        .day-holiday {
+            background: var(--holiday) !important;
+            color: #000 !important;
+            font-weight: 600;
+        }
+
+        .day-sick {
+            background: var(--sick) !important;
             font-weight: 600;
         }
 
@@ -225,9 +248,7 @@
         .legend {
             display: flex;
             gap: 24px;
-            padding: 16px 24px;
-            background: var(--ui-02);
-            border-top: 1px solid var(--border-subtle);
+            padding: 16px 0;
             flex-wrap: wrap;
         }
 
@@ -252,8 +273,8 @@
             font-size: 14px;
             cursor: pointer;
             font-family: 'IBM Plex Sans', sans-serif;
-            margin: 24px;
             transition: background 0.2s;
+            margin-top: 16px;
         }
 
         .save-button:hover {
@@ -293,12 +314,15 @@
                 grid-template-columns: 1fr;
             }
             
-            .stats-grid {
-                grid-template-columns: 1fr;
+            .stats-inline {
+                flex-direction: column;
+                gap: 16px;
             }
 
-            .tabs {
-                flex-wrap: wrap;
+            .employee-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
             }
         }
     </style>
@@ -310,205 +334,194 @@
             <p>Interactive vacation tracking - Data saved in browser localStorage</p>
         </div>
 
-        <div class="tabs">
-            <div class="tab active" onclick="switchEmployee('Mohamed Elhussein')">Mohamed Elhussein</div>
-            <div class="tab" onclick="switchEmployee('Menna Abdelhamid')">Menna Abdelhamid</div>
-            <div class="tab" onclick="switchEmployee('Teodora Negrea')">Teodora Negrea</div>
-            <div class="tab" onclick="switchEmployee('Charbel Antonios')">Charbel Antonios</div>
+        <div class="selection-mode">
+            <label>Selection Mode:</label>
+            <button class="mode-button active" onclick="setSelectionMode('vacation')">Vacation Days</button>
+            <button class="mode-button holiday" onclick="setSelectionMode('holiday')">Official Holidays</button>
+            <button class="mode-button sick" onclick="setSelectionMode('sick')">Sick Leave</button>
         </div>
 
-        <div id="Mohamed Elhussein" class="tab-content active">
-            <div class="stats-card">
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">PC Days Total</div>
+        <div id="Mohamed Elhussein" class="employee-section">
+            <div class="employee-header">
+                <div class="employee-name">Mohamed Elhussein</div>
+                <div class="stats-inline">
+                    <div class="stat-inline">
+                        <div class="stat-label">PC Days</div>
                         <div class="stat-value">5</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Vacation Days Total</div>
+                    <div class="stat-inline">
+                        <div class="stat-label">Vacation Days</div>
                         <div class="stat-value">25</div>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-inline">
                         <div class="stat-label">Days Selected</div>
                         <div class="stat-value" data-stat="selected">0</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Remaining Days</div>
-                        <div class="stat-value remaining" data-stat="remaining">30</div>
-                    </div>
                 </div>
             </div>
 
-            <div class="calendar-section">
-                <div class="calendar-header">
-                    <div class="calendar-title">2026 Full Year Calendar - Click dates to select vacation days</div>
+            <div class="months-container" data-calendar="Mohamed Elhussein"></div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--interactive-01);"></div>
+                    <span>Vacation Day</span>
                 </div>
-                <div class="months-container" data-calendar="Mohamed Elhussein"></div>
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--interactive-01);"></div>
-                        <span>Selected Vacation Day</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--ui-02);"></div>
-                        <span>Weekend</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--ui-02); opacity: 0.5;"></div>
-                        <span>Past Date (Disabled)</span>
-                    </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--holiday);"></div>
+                    <span>Official Holiday</span>
                 </div>
-                <button class="save-button" onclick="saveVacationDays('Mohamed Elhussein')">Save Vacation Selection</button>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--sick);"></div>
+                    <span>Sick Leave</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--ui-02);"></div>
+                    <span>Weekend</span>
+                </div>
             </div>
+            <button class="save-button" onclick="saveVacationDays('Mohamed Elhussein')">Save Selection</button>
         </div>
 
-        <div id="Menna Abdelhamid" class="tab-content">
-            <div class="stats-card">
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">PC Days Total</div>
+        <div id="Menna Abdelhamid" class="employee-section">
+            <div class="employee-header">
+                <div class="employee-name">Menna Abdelhamid</div>
+                <div class="stats-inline">
+                    <div class="stat-inline">
+                        <div class="stat-label">PC Days</div>
                         <div class="stat-value">5</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Vacation Days Total</div>
+                    <div class="stat-inline">
+                        <div class="stat-label">Vacation Days</div>
                         <div class="stat-value">25</div>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-inline">
                         <div class="stat-label">Days Selected</div>
                         <div class="stat-value" data-stat="selected">0</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Remaining Days</div>
-                        <div class="stat-value remaining" data-stat="remaining">30</div>
-                    </div>
                 </div>
             </div>
 
-            <div class="calendar-section">
-                <div class="calendar-header">
-                    <div class="calendar-title">2026 Full Year Calendar - Click dates to select vacation days</div>
+            <div class="months-container" data-calendar="Menna Abdelhamid"></div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--interactive-01);"></div>
+                    <span>Vacation Day</span>
                 </div>
-                <div class="months-container" data-calendar="Menna Abdelhamid"></div>
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--interactive-01);"></div>
-                        <span>Selected Vacation Day</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--ui-02);"></div>
-                        <span>Weekend</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--ui-02); opacity: 0.5;"></div>
-                        <span>Past Date (Disabled)</span>
-                    </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--holiday);"></div>
+                    <span>Official Holiday</span>
                 </div>
-                <button class="save-button" onclick="saveVacationDays('Menna Abdelhamid')">Save Vacation Selection</button>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--sick);"></div>
+                    <span>Sick Leave</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--ui-02);"></div>
+                    <span>Weekend</span>
+                </div>
             </div>
+            <button class="save-button" onclick="saveVacationDays('Menna Abdelhamid')">Save Selection</button>
         </div>
 
-        <div id="Teodora Negrea" class="tab-content">
-            <div class="stats-card">
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">PC Days Total</div>
+        <div id="Teodora Negrea" class="employee-section">
+            <div class="employee-header">
+                <div class="employee-name">Teodora Negrea</div>
+                <div class="stats-inline">
+                    <div class="stat-inline">
+                        <div class="stat-label">PC Days</div>
                         <div class="stat-value">5</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Vacation Days Total</div>
+                    <div class="stat-inline">
+                        <div class="stat-label">Vacation Days</div>
                         <div class="stat-value">25</div>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-inline">
                         <div class="stat-label">Days Selected</div>
                         <div class="stat-value" data-stat="selected">0</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Remaining Days</div>
-                        <div class="stat-value remaining" data-stat="remaining">30</div>
-                    </div>
                 </div>
             </div>
 
-            <div class="calendar-section">
-                <div class="calendar-header">
-                    <div class="calendar-title">2026 Full Year Calendar - Click dates to select vacation days</div>
+            <div class="months-container" data-calendar="Teodora Negrea"></div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--interactive-01);"></div>
+                    <span>Vacation Day</span>
                 </div>
-                <div class="months-container" data-calendar="Teodora Negrea"></div>
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--interactive-01);"></div>
-                        <span>Selected Vacation Day</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--ui-02);"></div>
-                        <span>Weekend</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--ui-02); opacity: 0.5;"></div>
-                        <span>Past Date (Disabled)</span>
-                    </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--holiday);"></div>
+                    <span>Official Holiday</span>
                 </div>
-                <button class="save-button" onclick="saveVacationDays('Teodora Negrea')">Save Vacation Selection</button>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--sick);"></div>
+                    <span>Sick Leave</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--ui-02);"></div>
+                    <span>Weekend</span>
+                </div>
             </div>
+            <button class="save-button" onclick="saveVacationDays('Teodora Negrea')">Save Selection</button>
         </div>
 
-        <div id="Charbel Antonios" class="tab-content">
-            <div class="stats-card">
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">PC Days Total</div>
+        <div id="Charbel Antonios" class="employee-section">
+            <div class="employee-header">
+                <div class="employee-name">Charbel Antonios</div>
+                <div class="stats-inline">
+                    <div class="stat-inline">
+                        <div class="stat-label">PC Days</div>
                         <div class="stat-value">5</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Vacation Days Total</div>
+                    <div class="stat-inline">
+                        <div class="stat-label">Vacation Days</div>
                         <div class="stat-value">25</div>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-inline">
                         <div class="stat-label">Days Selected</div>
                         <div class="stat-value" data-stat="selected">0</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Remaining Days</div>
-                        <div class="stat-value remaining" data-stat="remaining">30</div>
-                    </div>
                 </div>
             </div>
 
-            <div class="calendar-section">
-                <div class="calendar-header">
-                    <div class="calendar-title">2026 Full Year Calendar - Click dates to select vacation days</div>
+            <div class="months-container" data-calendar="Charbel Antonios"></div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--interactive-01);"></div>
+                    <span>Vacation Day</span>
                 </div>
-                <div class="months-container" data-calendar="Charbel Antonios"></div>
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--interactive-01);"></div>
-                        <span>Selected Vacation Day</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--ui-02);"></div>
-                        <span>Weekend</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--ui-02); opacity: 0.5;"></div>
-                        <span>Past Date (Disabled)</span>
-                    </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--holiday);"></div>
+                    <span>Official Holiday</span>
                 </div>
-                <button class="save-button" onclick="saveVacationDays('Charbel Antonios')">Save Vacation Selection</button>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--sick);"></div>
+                    <span>Sick Leave</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--ui-02);"></div>
+                    <span>Weekend</span>
+                </div>
             </div>
+            <button class="save-button" onclick="saveVacationDays('Charbel Antonios')">Save Selection</button>
         </div>
     </div>
 
     <div class="notification" id="notification">
-        Vacation days saved to browser!
+        Selection saved to browser!
     </div>
 
     <script>
         const STORAGE_KEY = 'vacation_planner_2026';
+        let currentMode = 'vacation'; // 'vacation', 'holiday', or 'sick'
         let selectedDates = {
-            'Mohamed Elhussein': new Set(),
-            'Menna Abdelhamid': new Set(),
-            'Teodora Negrea': new Set(),
-            'Charbel Antonios': new Set()
+            'Mohamed Elhussein': { vacation: new Set(), holiday: new Set(), sick: new Set() },
+            'Menna Abdelhamid': { vacation: new Set(), holiday: new Set(), sick: new Set() },
+            'Teodora Negrea': { vacation: new Set(), holiday: new Set(), sick: new Set() },
+            'Charbel Antonios': { vacation: new Set(), holiday: new Set(), sick: new Set() }
         };
         const today = new Date('2026-06-01');
 
@@ -516,13 +529,29 @@
                            'July', 'August', 'September', 'October', 'November', 'December'];
         const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
+        function setSelectionMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
         // Load data from localStorage
         function loadFromStorage() {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
                 const data = JSON.parse(stored);
                 Object.keys(data).forEach(employee => {
-                    selectedDates[employee] = new Set(data[employee]);
+                    if (data[employee].vacation) {
+                        selectedDates[employee].vacation = new Set(data[employee].vacation);
+                    }
+                    if (data[employee].holiday) {
+                        selectedDates[employee].holiday = new Set(data[employee].holiday);
+                    }
+                    if (data[employee].sick) {
+                        selectedDates[employee].sick = new Set(data[employee].sick);
+                    }
                 });
             }
         }
@@ -531,21 +560,13 @@
         function saveToStorage() {
             const data = {};
             Object.keys(selectedDates).forEach(employee => {
-                data[employee] = Array.from(selectedDates[employee]);
+                data[employee] = {
+                    vacation: Array.from(selectedDates[employee].vacation),
+                    holiday: Array.from(selectedDates[employee].holiday),
+                    sick: Array.from(selectedDates[employee].sick)
+                };
             });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        }
-
-        function switchEmployee(employeeName) {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(employeeName).classList.add('active');
         }
 
         function generateCalendar(employeeName) {
@@ -613,8 +634,15 @@
                     dayCell.onclick = () => toggleDate(dateString, dayCell, employeeName);
                 }
 
-                if (selectedDates[employeeName].has(dateString)) {
-                    dayCell.classList.add('day-selected');
+                // Apply styling based on what's selected
+                if (selectedDates[employeeName].vacation.has(dateString)) {
+                    dayCell.classList.add('day-vacation');
+                }
+                if (selectedDates[employeeName].holiday.has(dateString)) {
+                    dayCell.classList.add('day-holiday');
+                }
+                if (selectedDates[employeeName].sick.has(dateString)) {
+                    dayCell.classList.add('day-sick');
                 }
 
                 dayCell.dataset.date = dateString;
@@ -626,29 +654,43 @@
         }
 
         function toggleDate(dateString, cell, employeeName) {
-            if (selectedDates[employeeName].has(dateString)) {
-                selectedDates[employeeName].delete(dateString);
-                cell.classList.remove('day-selected');
+            // Remove all type classes first
+            cell.classList.remove('day-vacation', 'day-holiday', 'day-sick');
+            
+            // Check if this date is already selected in current mode
+            if (selectedDates[employeeName][currentMode].has(dateString)) {
+                // Deselect it
+                selectedDates[employeeName][currentMode].delete(dateString);
             } else {
-                selectedDates[employeeName].add(dateString);
-                cell.classList.add('day-selected');
+                // Remove from other modes if selected there
+                selectedDates[employeeName].vacation.delete(dateString);
+                selectedDates[employeeName].holiday.delete(dateString);
+                selectedDates[employeeName].sick.delete(dateString);
+                
+                // Add to current mode
+                selectedDates[employeeName][currentMode].add(dateString);
+                
+                // Apply appropriate class
+                if (currentMode === 'vacation') {
+                    cell.classList.add('day-vacation');
+                } else if (currentMode === 'holiday') {
+                    cell.classList.add('day-holiday');
+                } else if (currentMode === 'sick') {
+                    cell.classList.add('day-sick');
+                }
             }
+            
             updateStats(employeeName);
             saveToStorage();
         }
 
         function updateStats(employeeName) {
-            const pcTotal = 5;
-            const vacationTotal = 25;
-            const totalAvailable = pcTotal + vacationTotal;
-            const selected = selectedDates[employeeName].size;
-            const remaining = totalAvailable - selected;
+            const totalSelected = selectedDates[employeeName].vacation.size + 
+                                 selectedDates[employeeName].holiday.size + 
+                                 selectedDates[employeeName].sick.size;
 
             const tabContent = document.getElementById(employeeName);
-            tabContent.querySelector('[data-stat="selected"]').textContent = selected;
-            const remainingEl = tabContent.querySelector('[data-stat="remaining"]');
-            remainingEl.textContent = remaining;
-            remainingEl.style.color = remaining < 0 ? 'var(--danger)' : 'var(--success)';
+            tabContent.querySelector('[data-stat="selected"]').textContent = totalSelected;
         }
 
         function loadEmployeeData(employeeName) {
