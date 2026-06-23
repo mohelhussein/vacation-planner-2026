@@ -270,7 +270,7 @@
             font-family: 'IBM Plex Sans', sans-serif;
             transition: background 0.2s;
             margin-top: 16px;
-            display: none;
+            display: block;
         }
 
         .save-button:hover {
@@ -374,6 +374,7 @@
                     <span>Weekend</span>
                 </div>
             </div>
+            <button class="save-button" onclick="saveToStorage()">💾 Save Changes</button>
         </div>
 
         <div id="Menna Abdelhamid" class="employee-section">
@@ -414,6 +415,7 @@
                     <span>Weekend</span>
                 </div>
             </div>
+            <button class="save-button" onclick="saveToStorage()">💾 Save Changes</button>
         </div>
 
         <div id="Teodora Negrea" class="employee-section">
@@ -454,6 +456,7 @@
                     <span>Weekend</span>
                 </div>
             </div>
+            <button class="save-button" onclick="saveToStorage()">💾 Save Changes</button>
         </div>
 
         <div id="Charbel Antonios" class="employee-section">
@@ -494,6 +497,7 @@
                     <span>Weekend</span>
                 </div>
             </div>
+            <button class="save-button" onclick="saveToStorage()">💾 Save Changes</button>
         </div>
     </div>
 
@@ -558,6 +562,7 @@
             });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             console.log('Saved to localStorage');
+            showNotification();
         }
 
         // Load data from JSON file
@@ -674,7 +679,6 @@
             }
             
             updateStats(employeeName);
-            saveToStorage();
         }
 
         function updateStats(employeeName) {
