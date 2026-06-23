@@ -110,37 +110,6 @@
             color: #000;
         }
 
-        .export-section {
-            background: var(--ui-01);
-            padding: 16px 24px;
-            border: 1px solid var(--border-subtle);
-            margin-bottom: 24px;
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .export-button {
-            padding: 10px 20px;
-            border: 2px solid var(--success);
-            background: var(--success);
-            color: var(--text-01);
-            cursor: pointer;
-            font-family: 'IBM Plex Sans', sans-serif;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .export-button:hover {
-            opacity: 0.8;
-        }
-
-        .info-text {
-            color: var(--text-02);
-            font-size: 13px;
-        }
-
         .employee-section {
             background: var(--ui-01);
             border: 1px solid var(--border-subtle);
@@ -358,12 +327,7 @@
     <div class="container">
         <div class="header">
             <h1>Team Vacation Planner 2026</h1>
-            <p>Shared vacation tracking - Changes are saved for everyone to see</p>
-        </div>
-
-        <div class="export-section">
-            <button class="export-button" onclick="downloadData()">📥 Download Current Data</button>
-            <span class="info-text">💡 Download the vacation-data.json file, make your changes, then upload it back to GitHub to share with everyone</span>
+            <p>Personal vacation tracking - Changes are saved automatically in your browser</p>
         </div>
 
         <div class="selection-mode">
@@ -612,30 +576,6 @@
             } catch (error) {
                 console.log('No existing data file, starting fresh');
             }
-        }
-
-        // Download data as JSON file
-        function downloadData() {
-            const data = {};
-            Object.keys(selectedDates).forEach(employee => {
-                data[employee] = {
-                    vacation: Array.from(selectedDates[employee].vacation),
-                    holiday: Array.from(selectedDates[employee].holiday)
-                };
-            });
-            
-            const jsonString = JSON.stringify(data, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'vacation-data.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showNotification();
         }
 
         function generateCalendar(employeeName) {
