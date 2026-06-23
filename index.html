@@ -539,6 +539,7 @@
 
     <script>
         let currentMode = 'vacation';
+        const STORAGE_KEY = 'vacation-planner-2026';
         let selectedDates = {
             'Mohamed Elhussein': { vacation: new Set(), holiday: new Set() },
             'Menna Abdelhamid': { vacation: new Set(), holiday: new Set() },
@@ -557,6 +558,42 @@
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
+        }
+
+        // Load data from localStorage
+        function loadFromStorage() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    const data = JSON.parse(stored);
+                    Object.keys(data).forEach(employee => {
+                        if (selectedDates[employee]) {
+                            if (data[employee].vacation) {
+                                selectedDates[employee].vacation = new Set(data[employee].vacation);
+                            }
+                            if (data[employee].holiday) {
+                                selectedDates[employee].holiday = new Set(data[employee].holiday);
+                            }
+                        }
+                    });
+                    console.log('Loaded data from localStorage');
+                } catch (error) {
+                    console.error('Error loading from localStorage:', error);
+                }
+            }
+        }
+
+        // Save data to localStorage
+        function saveToStorage() {
+            const data = {};
+            Object.keys(selectedDates).forEach(employee => {
+                data[employee] = {
+                    vacation: Array.from(selectedDates[employee].vacation),
+                    holiday: Array.from(selectedDates[employee].holiday)
+                };
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            console.log('Saved to localStorage');
         }
 
         // Load data from JSON file
@@ -697,6 +734,7 @@
             }
             
             updateStats(employeeName);
+            saveToStorage();
         }
 
         function updateStats(employeeName) {
@@ -722,6 +760,9 @@
 
         // Initialize
         async function init() {
+            // First try to load from localStorage
+            loadFromStorage();
+            // Then try to load from JSON file (will override localStorage if file exists)
             await loadFromJSON();
             ['Mohamed Elhussein', 'Menna Abdelhamid', 'Teodora Negrea', 'Charbel Antonios'].forEach(name => {
                 loadEmployeeData(name);
