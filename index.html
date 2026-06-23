@@ -110,6 +110,37 @@
             color: #000;
         }
 
+        .export-section {
+            background: var(--ui-01);
+            padding: 16px 24px;
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .export-button {
+            padding: 10px 20px;
+            border: 2px solid var(--success);
+            background: var(--success);
+            color: var(--text-01);
+            cursor: pointer;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .export-button:hover {
+            opacity: 0.8;
+        }
+
+        .info-text {
+            color: var(--text-02);
+            font-size: 13px;
+        }
+
         .employee-section {
             background: var(--ui-01);
             border: 1px solid var(--border-subtle);
@@ -270,6 +301,7 @@
             font-family: 'IBM Plex Sans', sans-serif;
             transition: background 0.2s;
             margin-top: 16px;
+            display: none;
         }
 
         .save-button:hover {
@@ -326,7 +358,12 @@
     <div class="container">
         <div class="header">
             <h1>Team Vacation Planner 2026</h1>
-            <p>Interactive vacation tracking - Select mode and click dates to mark vacation or holidays</p>
+            <p>Shared vacation tracking - Changes are saved for everyone to see</p>
+        </div>
+
+        <div class="export-section">
+            <button class="export-button" onclick="downloadData()">📥 Download Current Data</button>
+            <span class="info-text">💡 Download the vacation-data.json file, make your changes, then upload it back to GitHub to share with everyone</span>
         </div>
 
         <div class="selection-mode">
@@ -373,7 +410,6 @@
                     <span>Weekend</span>
                 </div>
             </div>
-            <button class="save-button" onclick="saveVacationDays('Mohamed Elhussein')">Save Selection</button>
         </div>
 
         <div id="Menna Abdelhamid" class="employee-section">
@@ -414,7 +450,6 @@
                     <span>Weekend</span>
                 </div>
             </div>
-            <button class="save-button" onclick="saveVacationDays('Menna Abdelhamid')">Save Selection</button>
         </div>
 
         <div id="Teodora Negrea" class="employee-section">
@@ -455,7 +490,6 @@
                     <span>Weekend</span>
                 </div>
             </div>
-            <button class="save-button" onclick="saveVacationDays('Teodora Negrea')">Save Selection</button>
         </div>
 
         <div id="Charbel Antonios" class="employee-section">
@@ -496,17 +530,15 @@
                     <span>Weekend</span>
                 </div>
             </div>
-            <button class="save-button" onclick="saveVacationDays('Charbel Antonios')">Save Selection</button>
         </div>
     </div>
 
     <div class="notification" id="notification">
-        Selection saved to browser!
+        Data downloaded! Upload the file to GitHub to share changes.
     </div>
 
     <script>
-        const STORAGE_KEY = 'vacation_planner_2026';
-        let currentMode = 'vacation'; // 'vacation' or 'holiday'
+        let currentMode = 'vacation';
         let selectedDates = {
             'Mohamed Elhussein': { vacation: new Set(), holiday: new Set() },
             'Menna Abdelhamid': { vacation: new Set(), holiday: new Set() },
@@ -527,11 +559,11 @@
             event.target.classList.add('active');
         }
 
-        // Load data from localStorage
-        function loadFromStorage() {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                const data = JSON.parse(stored);
+        // Load data from JSON file
+        async function loadFromJSON() {
+            try {
+                const response = await fetch('vacation-data.json?t=' + Date.now());
+                const data = await response.json();
                 Object.keys(data).forEach(employee => {
                     if (data[employee].vacation) {
                         selectedDates[employee].vacation = new Set(data[employee].vacation);
@@ -540,11 +572,13 @@
                         selectedDates[employee].holiday = new Set(data[employee].holiday);
                     }
                 });
+            } catch (error) {
+                console.log('No existing data file, starting fresh');
             }
         }
 
-        // Save data to localStorage
-        function saveToStorage() {
+        // Download data as JSON file
+        function downloadData() {
             const data = {};
             Object.keys(selectedDates).forEach(employee => {
                 data[employee] = {
@@ -552,7 +586,19 @@
                     holiday: Array.from(selectedDates[employee].holiday)
                 };
             });
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'vacation-data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification();
         }
 
         function generateCalendar(employeeName) {
@@ -618,7 +664,6 @@
                     dayCell.onclick = () => toggleDate(dateString, dayCell, employeeName);
                 }
 
-                // Apply styling based on what's selected
                 if (selectedDates[employeeName].vacation.has(dateString)) {
                     dayCell.classList.add('day-vacation');
                 }
@@ -635,22 +680,15 @@
         }
 
         function toggleDate(dateString, cell, employeeName) {
-            // Remove all type classes first
             cell.classList.remove('day-vacation', 'day-holiday');
             
-            // Check if this date is already selected in current mode
             if (selectedDates[employeeName][currentMode].has(dateString)) {
-                // Deselect it
                 selectedDates[employeeName][currentMode].delete(dateString);
             } else {
-                // Remove from other mode if selected there
                 selectedDates[employeeName].vacation.delete(dateString);
                 selectedDates[employeeName].holiday.delete(dateString);
-                
-                // Add to current mode
                 selectedDates[employeeName][currentMode].add(dateString);
                 
-                // Apply appropriate class
                 if (currentMode === 'vacation') {
                     cell.classList.add('day-vacation');
                 } else if (currentMode === 'holiday') {
@@ -659,7 +697,6 @@
             }
             
             updateStats(employeeName);
-            saveToStorage();
         }
 
         function updateStats(employeeName) {
@@ -675,11 +712,6 @@
             updateStats(employeeName);
         }
 
-        function saveVacationDays(employeeName) {
-            saveToStorage();
-            showNotification();
-        }
-
         function showNotification() {
             const notification = document.getElementById('notification');
             notification.classList.add('show');
@@ -689,10 +721,14 @@
         }
 
         // Initialize
-        loadFromStorage();
-        ['Mohamed Elhussein', 'Menna Abdelhamid', 'Teodora Negrea', 'Charbel Antonios'].forEach(name => {
-            loadEmployeeData(name);
-        });
+        async function init() {
+            await loadFromJSON();
+            ['Mohamed Elhussein', 'Menna Abdelhamid', 'Teodora Negrea', 'Charbel Antonios'].forEach(name => {
+                loadEmployeeData(name);
+            });
+        }
+
+        init();
     </script>
 </body>
 </html>
